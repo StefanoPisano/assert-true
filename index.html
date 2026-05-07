@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Assert Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+
+<body>
+  <div id="globalProgress" style="display: none;">
+    <div class="global-info">
+      <span>Check Progress: <span id="globalStats">Pass: 0 | Fail: 0 | Feedback: 0 | Pending: 0</span></span>
+      <span>Test Progress: <span id="testStats">Passed: 0 | Failed: 0 | Feedback: 0 | Total: 0</span></span>
+    </div>
+    <div class="progress-container" style="width: 90%; max-width: 800px; margin: 0;">
+      <div class="progress-segment pass" id="globalPass" style="width: 0%"></div>
+      <div class="progress-segment fail" id="globalFail" style="width: 0%"></div>
+      <div class="progress-segment feedback" id="globalFeedback" style="width: 0%"></div>
+      <div class="progress-segment pending" id="globalPending" style="width: 100%"></div>
+    </div>
+  </div>
+  <h1>🧪 Asserth Hub</h1>
+  <a href="rules.html"
+    style="color: #fff; text-decoration: none; opacity: 0.7; font-size: 0.9rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.3);">📖
+    How to create a valid MD file?</a>
+  <div class="upload-area" id="uploadArea">
+    Click or drag‑and‑drop a Markdown file here<br />
+    <input type="file" id="fileInput" accept=".md,text/markdown" />
+  </div>
+  <div id="exportContainer" style="margin-bottom: 2rem; display: none; gap: 1rem;">
+    <button class="status-btn" style="padding: 0.6rem 1.2rem; font-size: 0.9rem;" id="exportBtn">Download Results
+      (.md)</button>
+  </div>
+  <div id="results"></div>
+  <div id="exportContainerBottom" style="margin-bottom: 2rem; display: none; justify-content: center; width: 100%;">
+    <button class="status-btn" style="padding: 0.8rem 1.6rem; font-size: 1rem;" id="exportBtnBottom">Download Results
+      (.md)</button>
+  </div>
+  <div class="footer">Built with vanilla HTML·CSS·JS – v1.2.0 – Created by <a href="https://stefanopisano.github.io"
+      style="color: var(--accent); text-decoration: none;">Stefano Pisano</a> ©
+    <script>document.write(new Date().getFullYear())</script>
+  </div>
+  <script src="script.js"></script>
+</body>
+
+</html>

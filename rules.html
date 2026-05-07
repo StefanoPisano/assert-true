@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Documentation - Test Case Rules</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #1e3c72, #2a5298);
+      --card-bg: rgba(255, 255, 255, 0.12);
+      --text-primary: #ffffff;
+      --accent: #ffca28;
+      --radius: 12px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      width: 90%;
+      max-width: 800px;
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    h2 {
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 0.5rem;
+    }
+
+    code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-family: 'Courier New', Courier, monospace;
+      color: var(--accent);
+    }
+
+    pre {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .back-link {
+      margin-top: 2rem;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      opacity: 0.8;
+      transition: 0.3s;
+    }
+
+    .back-link:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    ul {
+      line-height: 1.6;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    .example-box {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid var(--accent);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>📖 Markdown Formatting Rules</h1>
+    <p>To ensure your test cases are correctly parsed and displayed, please follow these structure rules.</p>
+
+    <h2>1. Metadata Tags</h2>
+    <p>Metadata tags provide high-level information about the test suite. They appear in a dedicated header card at the
+      top.</p>
+    <ul>
+      <li>Tags: <code>--name</code>, <code>--author</code>, <code>--description</code>, <code>--version</code>,
+        <code>--date</code></li>
+      <li>Example:
+        <pre>
+--name Test Suite Name
+--author Author Name
+--version 1.0.0
+--date 07/05/2026
+--description Description of the test suite</pre>
+      </li>
+    </ul>
+
+    <h2>2. Preconditions</h2>
+    <p>Preconditions are informational items that apply to all tests. They appear in a special highlighted card at the
+      very top of the list.</p>
+    <ul>
+      <li>Format: Use <code>### [Preconditions]</code> or <code>**Preconditions**</code> as a header, followed by a
+        bulleted list.</li>
+      <li>Example:
+        <pre>
+### [Preconditions]
+- User is logged in as Admin
+- Project has at least one active transaction</pre>
+      </li>
+    </ul>
+
+    <h2>2. Test Case Header</h2>
+    <p>Every test must start with a level 3 heading (<code>###</code>) containing the <code>[Test]</code> keyword. You
+      can optionally include a test number and a description.</p>
+    <ul>
+      <li>Format: <code>### [Test n - Description]</code></li>
+      <li>Example: <code>### [Test 1 - Login Functionality]</code></li>
+    </ul>
+
+    <h2>2. Steps</h2>
+    <p>Steps define the actions to be taken. They should be bullet points starting with the <code>[Step]</code> keyword.
+    </p>
+    <ul>
+      <li>Format: <code>- [Step] Description of the step</code></li>
+      <li>Example: <code>- [Step] Enter username and password</code></li>
+    </ul>
+
+    <h2>3. Checks (Expected Results)</h2>
+    <p>Checks define what needs to be verified after a step. They must be nested under a step and start with the
+      <code>[Check]</code> keyword.</p>
+    <ul>
+      <li>Format: <code>  - [Check] What to verify</code></li>
+      <li>Example: <code>  - [Check] The dashboard should be visible</code></li>
+    </ul>
+
+    <h2>4. Text Formatting</h2>
+    <p>You can use standard Markdown bold syntax to emphasize text within steps or checks.</p>
+    <ul>
+      <li>Syntax: <code>**text to be bold**</code></li>
+      <li>Example: <code>- [Step] Click the **Submit** button</code></li>
+    </ul>
+
+    <h2>5. Status Markers (Importing Results)</h2>
+    <p>When importing a file that was previously exported, the tool looks for <code>[Pass]</code> or <code>[Fail]</code>
+      markers inside the checks.</p>
+    <ul>
+      <li>Format: <code>- [Check] [Pass] Description</code></li>
+    </ul>
+
+    <h2>Full Example</h2>
+    <pre>
+### [Test 1 - Basic Auth]
+- [Step] Open the login page
+- [Step] Enter **admin** as credentials
+  - [Check] The login should be **successful**
+  - [Check] User should be redirected to /home
+
+### [Test 2 - Empty Fields]
+- [Step] Click Login without entering data
+  - [Check] An error message should appear
+    </pre>
+  </div>
+
+  <a href="index.html" class="back-link">← Back to Viewer</a>
+
+  <div style="margin-top: 2rem; opacity: 0.6; font-size: 0.8rem;">
+    Built with vanilla HTML·CSS·JS – Created by <a href="https://stefanopisano.github.io/"
+      style="color: var(--accent); text-decoration: none;">Stefano Pisano</a> © 2026
+  </div>
+</body>
+
+</html>
