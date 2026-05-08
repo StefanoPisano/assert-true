@@ -9,6 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -107,6 +110,19 @@
     .status-btn {
       @apply px-3 py-1 rounded border dark:border-card-border-dark border-card-border-light bg-transparent dark:text-slate-300 text-slate-600 cursor-pointer text-[0.75rem] transition-all duration-300 hover:bg-white/10 dark:hover:bg-white/10 hover:bg-black/5;
     }
+    /* Special styling for Export buttons to ensure visibility */
+    #exportContainer .status-btn, 
+    #exportContainerBottom .status-btn {
+      @apply dark:bg-accent-dark bg-accent-light dark:text-slate-900 text-white font-bold border-none shadow-md !text-[0.85rem] px-6 py-2;
+    }
+    #exportContainer .status-btn:hover, 
+    #exportContainerBottom .status-btn:hover {
+      @apply brightness-110 transform scale-105;
+    }
+    #exportContainer .status-btn:disabled, 
+    #exportContainerBottom .status-btn:disabled {
+      @apply bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 shadow-none transform-none;
+    }
     .status-btn.active.pass { @apply bg-[#2e7d32] border-[#1b5e20] text-white; }
     .status-btn.active.fail { @apply bg-[#c62828] border-[#b71c1c] text-white; }
     .status-btn.active.feedback { @apply bg-[#f57c00] border-[#e65100] text-white; }
@@ -165,14 +181,16 @@
     Click or drag‑and‑drop a Markdown file here<br />
     <input type="file" id="fileInput" class="hidden" accept=".md,text/markdown" />
   </div>
-  <div id="exportContainer" class="mb-8 hidden gap-4">
-    <button class="status-btn !px-5 !py-2.5 !text-[0.9rem]" id="exportBtn">Download Results
-      (.md)</button>
+  <div id="exportContainer" class="mb-8 hidden gap-3 flex-wrap justify-center">
+    <button class="status-btn !px-4 !py-2 !text-[0.85rem]" id="exportBtn">Download Results (.md)</button>
+    <button class="status-btn !px-4 !py-2 !text-[0.85rem]" id="exportExcelBtn">Download Results (.xlsx)</button>
+    <button class="status-btn !px-4 !py-2 !text-[0.85rem]" id="exportPdfBtn">Download Results (.pdf)</button>
   </div>
   <div id="results" class="w-[90%] max-w-[800px] flex flex-col items-center"></div>
-  <div id="exportContainerBottom" class="mb-8 hidden justify-center w-full">
-    <button class="status-btn !px-6 !py-3 !text-[1rem]" id="exportBtnBottom">Download Results
-      (.md)</button>
+  <div id="exportContainerBottom" class="mb-8 hidden justify-center w-full gap-3 flex-wrap">
+    <button class="status-btn !px-5 !py-2.5 !text-[0.9rem]" id="exportBtnBottom">Download Results (.md)</button>
+    <button class="status-btn !px-5 !py-2.5 !text-[0.9rem]" id="exportExcelBtnBottom">Download Results (.xlsx)</button>
+    <button class="status-btn !px-5 !py-2.5 !text-[0.9rem]" id="exportPdfBtnBottom">Download Results (.pdf)</button>
   </div>
   <div class="mt-auto p-4 text-[0.9rem] dark:opacity-70 text-slate-500 dark:text-slate-400 text-center">Built with vanilla HTML·JS & Tailwind CSS – v1.2.0 – Created by <a href="https://stefanopisano.github.io"
       class="dark:text-accent-dark text-accent-light no-underline font-bold">Stefano Pisano</a> ©

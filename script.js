@@ -3,6 +3,10 @@ const fileInput = document.getElementById('fileInput');
 const resultsDiv = document.getElementById('results');
 const exportBtn = document.getElementById('exportBtn');
 const exportBtnBottom = document.getElementById('exportBtnBottom');
+const exportExcelBtn = document.getElementById('exportExcelBtn');
+const exportExcelBtnBottom = document.getElementById('exportExcelBtnBottom');
+const exportPdfBtn = document.getElementById('exportPdfBtn');
+const exportPdfBtnBottom = document.getElementById('exportPdfBtnBottom');
 const exportContainer = document.getElementById('exportContainer');
 const exportContainerBottom = document.getElementById('exportContainerBottom');
 
@@ -136,11 +140,24 @@ function exportResults() {
     return;
   }
   
+  // Increment version for export
+  const oldVersion = parseFloat(currentMetadata.version) || 0;
+  const newVersion = (oldVersion + 0.1).toFixed(1);
+  
+  // Date format yyyymmdd_HHMM
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+  
+  const suiteName = (currentMetadata.name || 'testsuite').toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
+  const fileName = `${dateStr}_v${newVersion}_${suiteName}-results.md`;
+
   let md = '';
   
   // Export Metadata
   for (const [key, value] of Object.entries(currentMetadata)) {
-    md += `--${key} ${value}\n`;
+    let val = value;
+    if (key === 'version') val = newVersion;
+    md += `--${key} ${val}\n`;
   }
   if (Object.keys(currentMetadata).length > 0) md += '\n';
 
@@ -168,13 +185,164 @@ function exportResults() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'test-results.md';
+  a.download = fileName;
   a.click();
   URL.revokeObjectURL(url);
 }
 
+function exportExcel() {
+  if (metadataErrors.length > 0) {
+    alert('Cannot export: Mandatory metadata is missing.');
+    return;
+  }
+  if (!currentTests.length && !currentPreconditions.length && Object.keys(currentMetadata).length === 0) {
+    alert('No results to export.');
+    return;
+  }
+
+  const rows = [];
+  
+  // Add metadata as header rows
+  rows.push(["Metadata"]);
+  for (const [key, value] of Object.entries(currentMetadata)) {
+    rows.push([key, value]);
+  }
+  rows.push([]); // Spacer
+
+  // Add tests
+  rows.push(["Test Suite Details"]);
+  rows.push(["Test Case", "Step", "Check", "Status"]);
+
+  currentTests.forEach(test => {
+    test.steps.forEach((step, stepIdx) => {
+      if (step.checks && step.checks.length > 0) {
+        step.checks.forEach((check, checkIdx) => {
+          rows.push([
+            (stepIdx === 0 && checkIdx === 0) ? test.title : "",
+            (checkIdx === 0) ? step.text : "",
+            check.text,
+            check.status || "Pending"
+          ]);
+        });
+      } else {
+        rows.push([
+          (stepIdx === 0) ? test.title : "",
+          step.text,
+          "-",
+          "-"
+        ]);
+      }
+    });
+  });
+
+  const worksheet = XLSX.utils.aoa_to_sheet(rows);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Test Results");
+
+  // Generate filename similar to MD export
+  const oldVersion = parseFloat(currentMetadata.version) || 0;
+  const newVersion = (oldVersion + 0.1).toFixed(1);
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+  const suiteName = (currentMetadata.name || 'testsuite').toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
+  const fileName = `${dateStr}_v${newVersion}_${suiteName}-results.xlsx`;
+
+  XLSX.writeFile(workbook, fileName);
+}
+
+function exportPdf() {
+  if (metadataErrors.length > 0) {
+    alert('Cannot export: Mandatory metadata is missing.');
+    return;
+  }
+  if (!currentTests.length && !currentPreconditions.length && Object.keys(currentMetadata).length === 0) {
+    alert('No results to export.');
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  // Title
+  doc.setFontSize(22);
+  doc.setTextColor(30, 60, 114);
+  doc.text(currentMetadata.name || "Test Results", 14, 20);
+  
+  // Metadata Table
+  const metaData = Object.entries(currentMetadata).map(([k, v]) => [k.charAt(0).toUpperCase() + k.slice(1), v]);
+  doc.autoTable({
+    startY: 30,
+    head: [['Metadata Field', 'Value']],
+    body: metaData,
+    theme: 'grid',
+    headStyles: { fillColor: [30, 60, 114], fontSize: 12 },
+    styles: { fontSize: 10, cellPadding: 3 }
+  });
+
+  // Tests Table
+  const tableData = [];
+  currentTests.forEach(test => {
+    test.steps.forEach((step, stepIdx) => {
+      if (step.checks && step.checks.length > 0) {
+        step.checks.forEach((check, checkIdx) => {
+          tableData.push([
+            (stepIdx === 0 && checkIdx === 0) ? test.title : "",
+            (checkIdx === 0) ? step.text : "",
+            check.text,
+            check.status || "Pending"
+          ]);
+        });
+      } else {
+        tableData.push([
+          (stepIdx === 0) ? test.title : "",
+          step.text,
+          "-",
+          "-"
+        ]);
+      }
+    });
+  });
+
+  doc.autoTable({
+    startY: doc.lastAutoTable.finalY + 15,
+    head: [['Test Case', 'Step', 'Check', 'Status']],
+    body: tableData,
+    theme: 'striped',
+    headStyles: { fillColor: [30, 60, 114], fontSize: 12 },
+    styles: { fontSize: 9, cellPadding: 3 },
+    columnStyles: {
+      0: { cellWidth: 40 },
+      1: { cellWidth: 55 },
+      2: { cellWidth: 55 },
+      3: { cellWidth: 25, halign: 'center' }
+    },
+    didParseCell: function(data) {
+      if (data.column.index === 3 && data.cell.section === 'body') {
+        const status = data.cell.raw;
+        if (status === 'Pass') data.cell.styles.textColor = [46, 125, 50];
+        if (status === 'Fail') data.cell.styles.textColor = [198, 40, 40];
+        if (status === 'Feedback') data.cell.styles.textColor = [245, 124, 0];
+      }
+    }
+  });
+
+  // Filename
+  const oldVersion = parseFloat(currentMetadata.version) || 0;
+  const newVersion = (oldVersion + 0.1).toFixed(1);
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+  const suiteName = (currentMetadata.name || 'testsuite').toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
+  const fileName = `${dateStr}_v${newVersion}_${suiteName}-results.pdf`;
+
+  doc.save(fileName);
+}
+
 exportBtn.onclick = exportResults;
 exportBtnBottom.onclick = exportResults;
+exportExcelBtn.onclick = exportExcel;
+exportExcelBtnBottom.onclick = exportExcel;
+exportPdfBtn.onclick = exportPdf;
+exportPdfBtnBottom.onclick = exportPdf;
 
 function formatMarkdown(text) {
   // Basic bold formatting: **text** -> <strong>text</strong>
@@ -215,6 +383,19 @@ function updateGlobalStatus() {
   document.getElementById('globalPending').style.width = (pendingCount / total * 100) + '%';
   
   document.getElementById('globalStats').textContent = `Pass: ${passCount} | Fail: ${failCount} | Feedback: ${feedbackCount} | Pending: ${pendingCount}`;
+
+  // Enable/Disable export buttons
+  const canExport = pendingCount === 0 && total > 0;
+  const allButtons = [exportBtn, exportBtnBottom, exportExcelBtn, exportExcelBtnBottom, exportPdfBtn, exportPdfBtnBottom];
+  
+  allButtons.forEach(btn => {
+    btn.disabled = !canExport;
+    if (btn.disabled) {
+      btn.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+      btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+  });
 
   // Update test-level stats
   const testCards = document.querySelectorAll('.test-card');
@@ -341,11 +522,10 @@ function renderTests(data) {
   // Render Metadata Card
   if (Object.keys(metadata).length > 0) {
     const metaCard = document.createElement('div');
-    metaCard.className = 'test-card';
-    metaCard.style.borderTop = '4px solid #ffca28';
+    metaCard.className = 'test-card border-t-4 dark:border-accent-dark border-accent-light';
     
     const metaTitle = document.createElement('h2');
-    metaTitle.className = 'text-accent text-xl font-bold p-6 pb-2';
+    metaTitle.className = 'dark:text-accent-dark text-accent-light text-xl font-bold p-6 pb-2';
     metaTitle.textContent = metadata.name || 'Test Suite';
     metaCard.appendChild(metaTitle);
 
@@ -375,14 +555,13 @@ function renderTests(data) {
   // Render Preconditions
   if (preconditions.length > 0) {
     const preCard = document.createElement('div');
-    preCard.className = 'test-card';
-    preCard.style.borderLeft = '4px solid #ffca28';
+    preCard.className = 'test-card border-l-4 dark:border-accent-dark border-accent-light';
     
     const preHeader = document.createElement('div');
     preHeader.className = 'test-header';
     preHeader.innerHTML = '<span class="test-header-arrow">▼</span>';
     const preTitle = document.createElement('h3');
-    preTitle.className = 'text-accent font-semibold';
+    preTitle.className = 'dark:text-accent-dark text-accent-light font-semibold';
     preTitle.textContent = '📋 Preconditions';
     preHeader.appendChild(preTitle);
     preCard.appendChild(preHeader);
@@ -420,7 +599,7 @@ function renderTests(data) {
     };
 
     const title = document.createElement('h3');
-    title.className = 'font-semibold text-accent';
+    title.className = 'font-semibold dark:text-accent-dark text-accent-light';
     title.textContent = test.title;
     header.appendChild(title);
 
