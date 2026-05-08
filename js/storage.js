@@ -67,6 +67,15 @@ window.AssertHub.RecentFilesManager = {
     }
   },
 
+  delete(name, version) {
+    if (!confirm(`Are you sure you want to remove "${name}" (v${version}) from recent files?`)) return;
+    
+    let files = this.getAll();
+    files = files.filter(f => !(f.name === name && f.version === version));
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(files));
+    this.render();
+  },
+
   render() {
     const files = this.getAll();
     const container = document.getElementById('recentFilesContainer');
@@ -139,13 +148,28 @@ window.AssertHub.RecentFilesManager = {
 
       item.innerHTML = `
         <div class="flex justify-between items-start">
-          <h3 class="font-bold dark:text-accent-dark text-accent-light group-hover:underline line-clamp-1">${file.name}</h3>
-          <span class="text-[0.7rem] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 opacity-70">v${file.version}</span>
+          <div class="flex-1 min-w-0">
+            <h3 class="font-bold dark:text-accent-dark text-accent-light group-hover:underline line-clamp-1">${file.name}</h3>
+          </div>
+          <div class="flex items-center gap-2 ml-2">
+            <span class="text-[0.7rem] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 opacity-70">v${file.version}</span>
+            <button class="delete-file-btn opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/20 rounded-md transition-all duration-200" title="Remove from recent">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
         </div>
         ${tagsHtml}
         <div class="text-[0.75rem] opacity-60 mt-auto">Last opened: ${new Date(file.lastModified).toLocaleDateString()}</div>
       `;
-      item.onclick = () => this.load(file.name, file.version);
+      item.onclick = (e) => {
+        if (e.target.closest('.delete-file-btn')) {
+          this.delete(file.name, file.version);
+          return;
+        }
+        this.load(file.name, file.version);
+      };
       list.appendChild(item);
     });
   }
