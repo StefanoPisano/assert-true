@@ -144,12 +144,11 @@ function exportResults() {
   const oldVersion = parseFloat(currentMetadata.version) || 0;
   const newVersion = (oldVersion + 0.1).toFixed(1);
   
-  // Date format yyyymmdd_HHMM
   const now = new Date();
-  const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+  const dateTimeStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
   
   const suiteName = (currentMetadata.name || 'testsuite').toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
-  const fileName = `${dateStr}_v${newVersion}_${suiteName}-results.md`;
+  const fileName = `${dateTimeStr}_${suiteName}-results.md`;
 
   let md = '';
   
@@ -240,12 +239,10 @@ function exportExcel() {
   XLSX.utils.book_append_sheet(workbook, worksheet, "Test Results");
 
   // Generate filename similar to MD export
-  const oldVersion = parseFloat(currentMetadata.version) || 0;
-  const newVersion = (oldVersion + 0.1).toFixed(1);
   const now = new Date();
-  const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+  const dateTimeStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
   const suiteName = (currentMetadata.name || 'testsuite').toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
-  const fileName = `${dateStr}_v${newVersion}_${suiteName}-results.xlsx`;
+  const fileName = `${dateTimeStr}_${suiteName}-results.xlsx`;
 
   XLSX.writeFile(workbook, fileName);
 }
@@ -327,12 +324,10 @@ function exportPdf() {
   });
 
   // Filename
-  const oldVersion = parseFloat(currentMetadata.version) || 0;
-  const newVersion = (oldVersion + 0.1).toFixed(1);
   const now = new Date();
-  const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+  const dateTimeStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
   const suiteName = (currentMetadata.name || 'testsuite').toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
-  const fileName = `${dateStr}_v${newVersion}_${suiteName}-results.pdf`;
+  const fileName = `${dateTimeStr}_${suiteName}-results.pdf`;
 
   doc.save(fileName);
 }
