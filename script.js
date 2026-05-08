@@ -34,6 +34,7 @@ function handleFile(file) {
     currentTests = data.tests;
     currentPreconditions = data.preconditions;
     currentMetadata = data.metadata;
+    metadataErrors = data.errors;
     document.getElementById('globalProgress').style.display = 'flex';
     renderTests(data);
   };
@@ -42,10 +43,17 @@ function handleFile(file) {
 
 let currentPreconditions = [];
 let currentMetadata = {};
+let metadataErrors = [];
+
+const MANDATORY_METADATA = [
+  { key: 'name', label: '--name' },
+  { key: 'author', label: '--author' },
+  { key: 'version', label: '--version' }
+];
 
 function parseTests(md) {
   const lines = md.split('\n');
-  const result = { metadata: {}, preconditions: [], tests: [] };
+  const result = { metadata: {}, preconditions: [], tests: [], errors: [] };
   let currentTest = null;
   let currentStep = null;
   let inPreconditions = false;
@@ -107,10 +115,22 @@ function parseTests(md) {
     }
   }
   if (currentTest) result.tests.push(currentTest);
+
+  // Validation
+  MANDATORY_METADATA.forEach(field => {
+    if (!result.metadata[field.key]) {
+      result.errors.push(`Missing mandatory metadata tag: <strong>${field.label}</strong>`);
+    }
+  });
+
   return result;
 }
 
 function exportResults() {
+  if (metadataErrors.length > 0) {
+    alert('Cannot export: Mandatory metadata is missing.');
+    return;
+  }
   if (!currentTests.length && !currentPreconditions.length && Object.keys(currentMetadata).length === 0) {
     alert('No results to export.');
     return;
@@ -284,11 +304,31 @@ function updateCardStatus(card) {
 }
 
 function renderTests(data) {
-  const { metadata, preconditions, tests } = data;
+  const { metadata, preconditions, tests, errors } = data;
   resultsDiv.innerHTML = '';
   
   if (!tests.length && !preconditions.length && Object.keys(metadata).length === 0) {
     resultsDiv.innerHTML = '<p>No tests, preconditions or metadata found in the file.</p>';
+    document.getElementById('globalProgress').style.display = 'none';
+    exportContainer.style.display = 'none';
+    exportContainerBottom.style.display = 'none';
+    return;
+  }
+
+  // Handle Metadata Errors
+  if (errors && errors.length > 0) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'validation-error';
+    errorDiv.innerHTML = `
+      <h3>⚠️ Missing Mandatory Metadata</h3>
+      <p>The following tags are required at the top of your Markdown file:</p>
+      <ul>
+        ${errors.map(err => `<li>${err}</li>`).join('')}
+      </ul>
+      <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">Please fix these errors to view and run the test cases.</p>
+    `;
+    resultsDiv.appendChild(errorDiv);
+    
     document.getElementById('globalProgress').style.display = 'none';
     exportContainer.style.display = 'none';
     exportContainerBottom.style.display = 'none';

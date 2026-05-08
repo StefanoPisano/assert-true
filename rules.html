@@ -105,9 +105,12 @@
     <h2>1. Metadata Tags</h2>
     <p>Metadata tags provide high-level information about the test suite. They appear in a dedicated header card at the
       top.</p>
+    <div style="background: rgba(255, 202, 40, 0.1); border-left: 4px solid var(--accent); padding: 1rem; margin-bottom: 1.5rem;">
+      <strong>⚠️ Mandatory Tags:</strong> <code>--name</code>, <code>--author</code>, <code>--version</code> are required for the file to be processed.
+    </div>
     <ul>
-      <li>Tags: <code>--name</code>, <code>--author</code>, <code>--description</code>, <code>--version</code>,
-        <code>--date</code></li>
+      <li><strong>Mandatory:</strong> <code>--name</code>, <code>--author</code>, <code>--version</code></li>
+      <li>Optional: <code>--description</code>, <code>--date</code></li>
       <li>Example:
         <pre>
 --name Test Suite Name
