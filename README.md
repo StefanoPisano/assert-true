@@ -10,11 +10,12 @@
 - **Local Persistence**: Automatically saves your progress and recently opened files in the browser.
 - **Multi-Format Export**: Download your results as Markdown (preserving state), Excel (XLSX), or PDF.
 - **Tagging & Filtering**: Organize your test suites with tags and filter them instantly on the dashboard.
+- **URL-Based Sharing**: Generate a shareable link that encodes the entire test suite, allowing instant collaboration without a database.
 - **Privacy Focused**: Everything runs locally in your browser. No data is sent to any server.
 
 ## 📖 How to Use
 
-1.  **Prepare your file**: Create a Markdown file following the specific formatting rules.
+1.  **Prepare your file**: Create a Markdown file (max 15KB) following the specific formatting rules.
 2.  **Upload**: Click the upload area or drag-and-drop your `.md` file onto the home page.
 3.  **Execute**: Run through your tests and update their statuses.
 4.  **Export**: Once finished, download the results for reporting or to resume later.

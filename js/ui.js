@@ -394,6 +394,7 @@ window.AssertHub.resetApp = function() {
   getExportContainer().style.display = 'none';
   getExportContainerBottom().style.display = 'none';
   document.getElementById('backBtn').classList.add('hidden');
+  document.getElementById('floatingShareBtn').classList.add('hidden');
   
   window.AssertHub.RecentFilesManager.render();
   window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -10,6 +10,7 @@ const exportPdfBtn = document.getElementById('exportPdfBtn');
 const exportPdfBtnBottom = document.getElementById('exportPdfBtnBottom');
 const homeLink = document.getElementById('homeLink');
 const backBtn = document.getElementById('backBtn');
+const floatingShareBtn = document.getElementById('floatingShareBtn');
 
 // Initialize event listeners
 if (uploadArea) uploadArea.addEventListener('click', () => fileInput && fileInput.click());
@@ -48,10 +49,18 @@ if (exportPdfBtnBottom) exportPdfBtnBottom.onclick = window.AssertHub.exportPdf;
 
 if (homeLink) homeLink.onclick = window.AssertHub.resetApp;
 if (backBtn) backBtn.onclick = window.AssertHub.resetApp;
+if (floatingShareBtn) floatingShareBtn.onclick = window.AssertHub.shareLink;
 
 window.resetApp = window.AssertHub.resetApp; // Keep it global for the HTML onclick if needed
 
+const MAX_FILE_SIZE = 15 * 1024; // 15KB
+
 function handleFile(file) {
+  if (file.size > MAX_FILE_SIZE) {
+    alert(`File is too large (${(file.size / 1024).toFixed(1)}KB). To ensure sharing via link works reliably, please keep test suite files under 15KB.`);
+    return;
+  }
+
   const reader = new FileReader();
   reader.onload = ev => {
     const md = ev.target.result;
@@ -78,6 +87,7 @@ window.AssertHub.processTestData = function(data, rawMd, shouldSave) {
   document.getElementById('backBtn').classList.remove('hidden');
   
   document.getElementById('globalProgress').style.display = 'flex';
+  document.getElementById('floatingShareBtn').classList.remove('hidden');
   window.AssertHub.renderTests(data);
   
   // Scroll to top of results
@@ -89,3 +99,19 @@ console.log('Main module initializing...');
 window.AssertHub.setOnFileLoadCallback(window.AssertHub.processTestData);
 window.AssertHub.RecentFilesManager.render();
 console.log('Recent files rendered.');
+
+// Check for shared suite in URL
+const urlParams = new URLSearchParams(window.location.search);
+const sharedSuite = urlParams.get('suite');
+if (sharedSuite) {
+  try {
+    const decodedMd = decodeURIComponent(escape(atob(sharedSuite)));
+    const data = window.AssertHub.parseTests(decodedMd);
+    window.AssertHub.processTestData(data, decodedMd, true);
+    // Clean up URL without refreshing
+    window.history.replaceState({}, document.title, window.location.pathname);
+    console.log('Shared suite loaded successfully.');
+  } catch (e) {
+    console.error('Failed to load shared suite:', e);
+  }
+}

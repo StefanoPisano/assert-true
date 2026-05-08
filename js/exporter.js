@@ -171,4 +171,38 @@ window.AssertHub.exportPdf = function () {
   const fileName = `${dateTimeStr}_${suiteName}-results.pdf`;
 
   doc.save(fileName);
-}
+};
+
+window.AssertHub.shareLink = function () {
+  const state = window.AssertHub.state;
+  if (state.metadataErrors.length > 0) {
+    alert('Cannot share: Mandatory metadata is missing.');
+    return;
+  }
+
+  const md = window.AssertHub.generateMarkdown(state.currentMetadata, state.currentTests, state.currentPreconditions, false);
+  
+  try {
+    // Encode to Base64 (UTF-8 safe)
+    const encoded = btoa(unescape(encodeURIComponent(md)));
+    const url = new URL(window.location.href.split('?')[0]); // Remove existing params
+    url.searchParams.set('suite', encoded);
+    
+    const finalUrl = url.toString();
+    
+    if (finalUrl.length > 8000) {
+      alert('Warning: This test suite is very large and the link might not work in all browsers due to URL length limits.');
+    }
+
+    navigator.clipboard.writeText(finalUrl).then(() => {
+      // Small feedback on the button itself or alert
+      alert('🚀 Shareable link copied to clipboard!\n\nAnyone with this link can open this test suite directly.');
+    }).catch(err => {
+      console.error('Clipboard error:', err);
+      prompt('Copy this link to share:', finalUrl);
+    });
+  } catch (e) {
+    console.error('Sharing error:', e);
+    alert('Failed to generate share link.');
+  }
+};
