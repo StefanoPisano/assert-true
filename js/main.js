@@ -11,6 +11,8 @@ const exportPdfBtnBottom = document.getElementById('exportPdfBtnBottom');
 const homeLink = document.getElementById('homeLink');
 const backBtn = document.getElementById('backBtn');
 const floatingShareBtn = document.getElementById('floatingShareBtn');
+const resetAllBtn = document.getElementById('resetAllBtn');
+const resetAllBtnBottom = document.getElementById('resetAllBtnBottom');
 
 // Initialize event listeners
 if (uploadArea) uploadArea.addEventListener('click', () => fileInput && fileInput.click());
@@ -50,6 +52,8 @@ if (exportPdfBtnBottom) exportPdfBtnBottom.onclick = window.AssertHub.exportPdf;
 if (homeLink) homeLink.onclick = window.AssertHub.resetApp;
 if (backBtn) backBtn.onclick = window.AssertHub.resetApp;
 if (floatingShareBtn) floatingShareBtn.onclick = window.AssertHub.shareLink;
+if (resetAllBtn) resetAllBtn.onclick = window.AssertHub.resetAllTests;
+if (resetAllBtnBottom) resetAllBtnBottom.onclick = window.AssertHub.resetAllTests;
 
 window.resetApp = window.AssertHub.resetApp; // Keep it global for the HTML onclick if needed
 

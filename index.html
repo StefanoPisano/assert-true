@@ -94,7 +94,7 @@
       @apply hidden;
     }
     .test-status {
-      @apply ml-auto px-3 py-1 rounded-full text-[0.8rem] font-bold uppercase dark:bg-white/10 bg-black/5 border dark:border-card-border-dark border-card-border-light;
+      @apply ml-auto px-3 py-1 text-[0.8rem] font-bold uppercase dark:bg-white/10 bg-black/5 border dark:border-card-border-dark border-card-border-light;
     }
     .status-pass { @apply bg-[#2e7d32] text-white border-[#1b5e20]; }
     .status-fail { @apply bg-[#c62828] text-white border-[#b71c1c]; }
@@ -108,7 +108,7 @@
       @apply h-full transition-all duration-300;
     }
     .status-btn {
-      @apply px-3 py-1 rounded border dark:border-card-border-dark border-card-border-light bg-transparent dark:text-slate-300 text-slate-600 cursor-pointer text-[0.75rem] transition-all duration-300 hover:bg-white/10 dark:hover:bg-white/10 hover:bg-black/5;
+      @apply px-3 py-1 text-[0.8rem] rounded border dark:border-card-border-dark border-card-border-light bg-transparent dark:text-slate-300 text-slate-600 cursor-pointer transition-all duration-300 hover:bg-white/10 dark:hover:bg-white/10 hover:bg-black/5;
     }
     /* Special styling for Export buttons to ensure visibility */
     #exportContainer .status-btn, 
@@ -185,7 +185,7 @@
     <a href="rules.html"
       class="dark:text-white/70 text-slate-600 no-underline text-[0.9rem] border-b dark:border-white/30 border-slate-300 transition-colors duration-300 hover:text-accent-light dark:hover:text-accent-dark">📖
       How to create a valid MD file?</a>
-    <button id="backBtn" class="status-btn mt-4 hidden">← Back to Upload</button>
+    <button id="backBtn" class="status-btn mt-4 hidden">← Back to Home</button>
   </div>
   <div class="upload-area" id="uploadArea">
     Click or drag‑and‑drop a Markdown file here (Max 15KB)<br />
@@ -206,12 +206,14 @@
     <button class="status-btn !px-4 !py-2 !text-[0.85rem]" id="exportBtn">Download Results (.md)</button>
     <button class="status-btn !px-4 !py-2 !text-[0.85rem]" id="exportExcelBtn">Download Results (.xlsx)</button>
     <button class="status-btn !px-4 !py-2 !text-[0.85rem]" id="exportPdfBtn">Download Results (.pdf)</button>
+    <button class="status-btn !px-4 !py-2 !text-[0.85rem] !bg-red-600 dark:!bg-red-700 !text-white font-bold" id="resetAllBtn">🔄 Reset All</button>
   </div>
   <div id="results" class="w-[90%] max-w-[800px] flex flex-col items-center"></div>
   <div id="exportContainerBottom" class="mb-8 hidden justify-center w-full gap-3 flex-wrap">
     <button class="status-btn !px-5 !py-2.5 !text-[0.9rem]" id="exportBtnBottom">Download Results (.md)</button>
     <button class="status-btn !px-5 !py-2.5 !text-[0.9rem]" id="exportExcelBtnBottom">Download Results (.xlsx)</button>
     <button class="status-btn !px-5 !py-2.5 !text-[0.9rem]" id="exportPdfBtnBottom">Download Results (.pdf)</button>
+    <button class="status-btn !px-5 !py-2.5 !text-[0.9rem] !bg-red-600 dark:!bg-red-700 !text-white font-bold" id="resetAllBtnBottom">🔄 Reset All</button>
   </div>
   <button id="floatingShareBtn"
     class="fixed bottom-8 right-8 z-[110] w-14 h-14 rounded-full bg-accent-light dark:bg-accent-dark text-white dark:text-slate-900 shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 hidden group"

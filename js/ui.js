@@ -4,12 +4,12 @@ function getResultsDiv() { return document.getElementById('results'); }
 function getExportContainer() { return document.getElementById('exportContainer'); }
 function getExportContainerBottom() { return document.getElementById('exportContainerBottom'); }
 
-window.AssertHub.formatMarkdown = function(text) {
+window.AssertHub.formatMarkdown = function (text) {
   // Basic bold formatting: **text** -> <strong>text</strong>
   return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 };
 
-window.AssertHub.updateGlobalStatus = function() {
+window.AssertHub.updateGlobalStatus = function () {
   const state = window.AssertHub.state;
   const allCheckItems = document.querySelectorAll('.check-item');
   if (allCheckItems.length === 0) return;
@@ -23,7 +23,7 @@ window.AssertHub.updateGlobalStatus = function() {
     const passBtn = item.querySelector('.status-btn.pass');
     const failBtn = item.querySelector('.status-btn.fail');
     const feedbackBtn = item.querySelector('.status-btn.feedback');
-    
+
     if (failBtn.classList.contains('active')) {
       failCount++;
     } else if (feedbackBtn.classList.contains('active')) {
@@ -40,20 +40,20 @@ window.AssertHub.updateGlobalStatus = function() {
   document.getElementById('globalFail').style.width = (failCount / total * 100) + '%';
   document.getElementById('globalFeedback').style.width = (feedbackCount / total * 100) + '%';
   document.getElementById('globalPending').style.width = (pendingCount / total * 100) + '%';
-  
+
   document.getElementById('globalStats').textContent = `Pass: ${passCount} | Fail: ${failCount} | Feedback: ${feedbackCount} | Pending: ${pendingCount}`;
 
   // Enable/Disable export buttons
   const canExport = pendingCount === 0 && total > 0;
   const allButtons = [
-    document.getElementById('exportBtn'), 
-    document.getElementById('exportBtnBottom'), 
-    document.getElementById('exportExcelBtn'), 
-    document.getElementById('exportExcelBtnBottom'), 
-    document.getElementById('exportPdfBtn'), 
+    document.getElementById('exportBtn'),
+    document.getElementById('exportBtnBottom'),
+    document.getElementById('exportExcelBtn'),
+    document.getElementById('exportExcelBtnBottom'),
+    document.getElementById('exportPdfBtn'),
     document.getElementById('exportPdfBtnBottom')
   ];
-  
+
   allButtons.forEach(btn => {
     if (!btn) return;
     btn.disabled = !canExport;
@@ -69,7 +69,7 @@ window.AssertHub.updateGlobalStatus = function() {
   let testsPassed = 0;
   let testsFailed = 0;
   let testsFeedback = 0;
-  
+
   testCards.forEach(card => {
     const badge = card.querySelector('.test-status');
     if (!badge) return; // Skip preconditions/metadata cards
@@ -97,13 +97,13 @@ window.AssertHub.updateGlobalStatus = function() {
   }
 }
 
-window.AssertHub.updateCardStatus = function(card) {
+window.AssertHub.updateCardStatus = function (card) {
   const statusBadge = card.querySelector('.test-status');
   if (!statusBadge) return; // Skip for preconditions card
 
   const checkItems = card.querySelectorAll('.check-item');
   const progressBar = card.querySelector('.progress-container');
-  
+
   let passCount = 0;
   let failCount = 0;
   let feedbackCount = 0;
@@ -113,7 +113,7 @@ window.AssertHub.updateCardStatus = function(card) {
     const passBtn = item.querySelector('.status-btn.pass');
     const failBtn = item.querySelector('.status-btn.fail');
     const feedbackBtn = item.querySelector('.status-btn.feedback');
-    
+
     if (failBtn.classList.contains('active')) {
       failCount++;
     } else if (feedbackBtn.classList.contains('active')) {
@@ -153,11 +153,11 @@ window.AssertHub.updateCardStatus = function(card) {
   window.AssertHub.updateGlobalStatus();
 }
 
-window.AssertHub.renderTests = function(data) {
+window.AssertHub.renderTests = function (data) {
   const { metadata, preconditions, tests, errors } = data;
   const resultsDiv = getResultsDiv();
   resultsDiv.innerHTML = '';
-  
+
   if (!tests.length && !preconditions.length && Object.keys(metadata).length === 0) {
     resultsDiv.innerHTML = '<p>No tests, preconditions or metadata found in the file.</p>';
     document.getElementById('globalProgress').style.display = 'none';
@@ -179,7 +179,7 @@ window.AssertHub.renderTests = function(data) {
       <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">Please fix these errors to view and run the test cases.</p>
     `;
     resultsDiv.appendChild(errorDiv);
-    
+
     document.getElementById('globalProgress').style.display = 'none';
     getExportContainer().style.display = 'none';
     getExportContainerBottom().style.display = 'none';
@@ -193,7 +193,7 @@ window.AssertHub.renderTests = function(data) {
   if (Object.keys(metadata).length > 0) {
     const metaCard = document.createElement('div');
     metaCard.className = 'test-card border-t-4 dark:border-accent-dark border-accent-light';
-    
+
     const metaTitle = document.createElement('h2');
     metaTitle.className = 'dark:text-accent-dark text-accent-light text-xl font-bold p-6 pb-2';
     metaTitle.textContent = metadata.name || 'Test Suite';
@@ -227,7 +227,7 @@ window.AssertHub.renderTests = function(data) {
   if (preconditions.length > 0) {
     const preCard = document.createElement('div');
     preCard.className = 'test-card border-l-4 dark:border-accent-dark border-accent-light';
-    
+
     const preHeader = document.createElement('div');
     preHeader.className = 'test-header';
     preHeader.innerHTML = '<span class="test-header-arrow">▼</span>';
@@ -259,11 +259,11 @@ window.AssertHub.renderTests = function(data) {
   tests.forEach(test => {
     const card = document.createElement('div');
     card.className = 'test-card';
-    
+
     const header = document.createElement('div');
     header.className = 'test-header';
     header.innerHTML = '<span class="test-header-arrow">▼</span>';
-    
+
     header.onclick = (e) => {
       if (e.target.closest('button')) return;
       card.classList.toggle('collapsed');
@@ -275,11 +275,30 @@ window.AssertHub.renderTests = function(data) {
     header.appendChild(title);
 
     const statusBadge = document.createElement('div');
-    statusBadge.className = 'test-status status-pending';
+    statusBadge.className = 'test-status status-pending rounded';
     statusBadge.textContent = 'Pending';
     header.appendChild(statusBadge);
 
     card.appendChild(header);
+
+    // Add Reset Button to Header
+    const resetBtn = document.createElement('button');
+    resetBtn.className = 'status-btn font-bold ml-2 rounded test-reset-btn !bg-red-600 dark:!bg-red-700 !text-white';
+    resetBtn.textContent = 'RESET';
+    resetBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (confirm(`Reset all steps in "${test.title}"?`)) {
+        test.steps.forEach(step => {
+          if (step.checks) step.checks.forEach(c => c.status = null);
+        });
+        const statusBtns = card.querySelectorAll('.status-btn');
+        statusBtns.forEach(b => b.classList.remove('active'));
+        window.AssertHub.updateCardStatus(card);
+        window.AssertHub.RecentFilesManager.saveCurrentState();
+      }
+    };
+    // Add to header after status badge
+    header.appendChild(resetBtn);
 
     // Add Progress Bar to Card
     const cardProgress = document.createElement('div');
@@ -313,22 +332,22 @@ window.AssertHub.renderTests = function(data) {
         step.checks.forEach(check => {
           const checkLi = document.createElement('li');
           checkLi.className = 'check-item flex items-start w-full';
-          
+
           const statusGroup = document.createElement('div');
           statusGroup.className = 'flex gap-2 mr-4 mt-1';
-          
+
           const passBtn = document.createElement('button');
-          passBtn.className = 'status-btn pass';
+          passBtn.className = 'status-btn pass rounded';
           passBtn.textContent = 'Pass';
           if (check.status === 'Pass') passBtn.classList.add('active');
-          
+
           const failBtn = document.createElement('button');
-          failBtn.className = 'status-btn fail';
+          failBtn.className = 'status-btn fail rounded';
           failBtn.textContent = 'Fail';
           if (check.status === 'Fail') failBtn.classList.add('active');
 
           const feedbackBtn = document.createElement('button');
-          feedbackBtn.className = 'status-btn feedback';
+          feedbackBtn.className = 'status-btn feedback rounded';
           feedbackBtn.textContent = 'Feedback';
           if (check.status === 'Feedback') feedbackBtn.classList.add('active');
 
@@ -363,7 +382,7 @@ window.AssertHub.renderTests = function(data) {
           statusGroup.appendChild(failBtn);
           statusGroup.appendChild(feedbackBtn);
           checkLi.appendChild(statusGroup);
-          
+
           const checkSpan = document.createElement('span');
           checkSpan.innerHTML = window.AssertHub.formatMarkdown(check.text);
           checkLi.appendChild(checkSpan);
@@ -381,13 +400,13 @@ window.AssertHub.renderTests = function(data) {
   });
 }
 
-window.AssertHub.resetApp = function() {
+window.AssertHub.resetApp = function () {
   const state = window.AssertHub.state;
   state.currentTests = [];
   state.currentPreconditions = [];
   state.currentMetadata = {};
   state.metadataErrors = [];
-  
+
   getResultsDiv().innerHTML = '';
   document.getElementById('uploadArea').style.display = 'block';
   document.getElementById('globalProgress').style.display = 'none';
@@ -395,7 +414,28 @@ window.AssertHub.resetApp = function() {
   getExportContainerBottom().style.display = 'none';
   document.getElementById('backBtn').classList.add('hidden');
   document.getElementById('floatingShareBtn').classList.add('hidden');
-  
+
   window.AssertHub.RecentFilesManager.render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.AssertHub.resetAllTests = function () {
+  const state = window.AssertHub.state;
+  if (!state.currentTests.length) return;
+  if (!confirm('Are you sure you want to reset ALL test statuses in this suite?')) return;
+
+  state.currentTests.forEach(test => {
+    test.steps.forEach(step => {
+      if (step.checks) step.checks.forEach(c => c.status = null);
+    });
+  });
+
+  const data = {
+    metadata: state.currentMetadata,
+    preconditions: state.currentPreconditions,
+    tests: state.currentTests,
+    errors: state.metadataErrors
+  };
+  window.AssertHub.renderTests(data);
+  window.AssertHub.RecentFilesManager.saveCurrentState();
 };

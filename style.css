@@ -157,11 +157,38 @@ li ul {
   padding-bottom: 0;
 }
 
+.test-reset-btn {
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.65rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.test-reset-btn:hover {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+}
+
+.test-card.collapsed .test-reset-btn {
+  display: none;
+}
+
+.test-header h3 {
+  flex: 1;
+  margin: 0;
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
 /* Status Badges */
 .test-status {
-  margin-left: auto;
   padding: 0.4rem 0.8rem;
-  border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -184,7 +211,6 @@ li ul {
 
 .status-btn {
   padding: 0.2rem 0.6rem;
-  border-radius: 4px;
   border: 1px solid var(--card-border);
   background: transparent;
   color: var(--text-primary);
